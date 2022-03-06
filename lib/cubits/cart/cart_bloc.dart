@@ -10,14 +10,6 @@ part 'cart_state.dart';
 
 class CartBloc extends Bloc<CartEvent, CartState> {
   CartBloc() : super(CartState.initial());
-  // {
-  //   on<ProductAdded>((added, emit) => _mapAddedToState);
-  //   on<CartItemRemoved>((removed, emit) => _mapRemovedToState);
-  //   on<CartItemCountIncreased>(
-  //       (countIncreased, emit) => _mapCountIncreasedToState);
-  //   on<CartItemCountDecreased>(
-  //       (countDecreased, emit) => _mapCountDecreasedToState);
-  // }
 
   @override
   Stream<CartState> mapEventToState(CartEvent event) => event.map(
@@ -38,9 +30,9 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     if (cartItemIndex >= 0) {
       yield* _increaseCartItemCount(cartItem, cartItemIndex);
     } else {
-      final items = state.cartItems.rebuild((builder) => builder.add(cartItem));
-
-      yield state.copyWith(cartItems: items);
+      final cartItems =
+          state.cartItems.rebuild((builder) => builder.add(cartItem));
+      yield state.copyWith(cartItems: cartItems);
     }
   }
 
@@ -48,7 +40,6 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     CartItemRemoved event,
   ) async* {
     final cartItem = event.item;
-
     yield* _removeCartItem(cartItem);
   }
 
@@ -98,21 +89,21 @@ class CartBloc extends Bloc<CartEvent, CartState> {
     int index,
     int value,
   ) async* {
-    final items = state.cartItems.rebuild(
+    final cartItems = state.cartItems.rebuild(
       (builder) => builder[index] = item.copyWith(count: item.count + value),
     );
-
-    yield state.copyWith(cartItems: items);
+    yield state.copyWith(cartItems: cartItems);
   }
 
   Stream<CartState> _removeCartItem(CartItem item) async* {
-    final items = state.cartItems.rebuild((builder) => builder.remove(item));
+    final cartItems =
+        state.cartItems.rebuild((builder) => builder.remove(item));
 
-    yield state.copyWith(cartItems: items);
+    yield state.copyWith(cartItems: cartItems);
   }
 
   CartState fromJson(Map<String, dynamic> json) {
-    final cartItemsJsonList = json['items'] as List;
+    final cartItemsJsonList = json['cartItems'] as List;
     final cartItems =
         cartItemsJsonList.map((item) => CartItem.fromJson(item)).toList();
 
